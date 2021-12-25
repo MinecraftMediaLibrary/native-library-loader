@@ -26,3 +26,19 @@ some examples to get you started:
 There are currently 3 supported options for LibraryLocation. You can either provide a local file,
 a resource from inside your jar, or a URL. You must also provide the type of operating system that
 you want to associate the binary.
+
+## Setup
+
+1) Add the repository:
+```kotlin
+repositories { 
+    maven("https://pulsebeat02.jfrog.io/artifactory/pulse-gradle-release-local/");
+}
+```
+
+2) Add the dependency:
+```kotlin
+dependencies {
+    implementation("io.github.pulsebeat02", "native-library-loader", "v1.0.0")
+}
+```
