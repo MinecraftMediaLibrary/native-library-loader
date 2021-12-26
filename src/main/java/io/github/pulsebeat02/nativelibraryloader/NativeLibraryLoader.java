@@ -27,30 +27,55 @@ import io.github.pulsebeat02.nativelibraryloader.os.Platform;
 import io.github.pulsebeat02.nativelibraryloader.strategy.implementation.ResourceLocator;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
+/**
+ * Main class for constructing a native library loader from the specified binaries and loading them
+ * into the runtime.
+ */
 public final class NativeLibraryLoader {
 
-  private final List<Entry<Platform, ResourceLocator>> libs;
+  private final List<Entry<Platform, List<ResourceLocator>>> libs;
 
-  NativeLibraryLoader(final List<Entry<Platform, ResourceLocator>> libs) {
+  NativeLibraryLoader(final List<Entry<Platform, List<ResourceLocator>>> libs) {
     this.libs = libs;
   }
 
-  public void load() {
-    this.libs.stream()
-        .filter(entry -> entry.getKey().matchesCurrentOS())
-        .forEach(entry -> entry.getValue().loadIntoClassloader());
+  /**
+   * Loads the native libraries.
+   *
+   * @param parallel whether the operation should be parallel over many native libraries
+   *     (dependencies are still loaded before the specified binary however).
+   */
+  public void load(final boolean parallel) {
+    if (parallel) {
+      this.applyOperations(this.libs.stream().parallel());
+    } else {
+      this.applyOperations(this.libs.stream());
+    }
   }
 
+  private void applyOperations(final Stream<Entry<Platform, List<ResourceLocator>>> stream) {
+    stream
+        .filter(entry -> entry.getKey().matchesCurrentOS())
+        .forEach(entry -> entry.getValue().forEach(ResourceLocator::loadIntoClassloader));
+  }
+
+  /**
+   * Create a new builder for NativeLibraryLoader.
+   *
+   * @return creates a builder for NativeLibraryLoader
+   */
   public static Builder builder() {
     return new Builder();
   }
 
   public static class Builder {
 
-    private final List<Entry<Platform, ResourceLocator>> libs;
+    private final List<Entry<Platform, List<ResourceLocator>>> libs;
 
     {
       this.libs = new ArrayList<>();
@@ -58,16 +83,54 @@ public final class NativeLibraryLoader {
 
     private Builder() {}
 
+    /**
+     * Adds a native library to be loaded at runtime.
+     *
+     * @param os the operating system
+     * @param arch the architecture
+     * @param bits the bits
+     * @param location the location of the binary
+     * @param dependencies native dependencies to be loaded first. Dependencies should be ordered
+     *     correctly based on how they should load (order matters here!).
+     * @return the same builder
+     */
     public Builder addNativeLibrary(
-        final OS os, final Arch arch, final Bits bits, final ResourceLocator location) {
-      this.libs.add(new SimpleImmutableEntry<>(Platform.ofPlatform(os, arch, bits), location));
+        final OS os,
+        final Arch arch,
+        final Bits bits,
+        final ResourceLocator location,
+        final ResourceLocator... dependencies) {
+
+      final List<ResourceLocator> locators = new ArrayList<>(Arrays.asList(dependencies));
+      locators.add(location);
+
+      this.libs.add(new SimpleImmutableEntry<>(Platform.ofPlatform(os, arch, bits), locators));
+
       return this;
     }
 
-    public List<Entry<Platform, ResourceLocator>> getLibraries() {
-      return this.libs;
+    /**
+     * Adds a native library to be loaded at runtime.
+     *
+     * @param platform the platform the binary is targeted on
+     * @param location the location of the binary
+     * @param dependencies native dependencies to be loaded first. Dependencies should be ordered *
+     *     correctly based on how they should load (order matters here!).
+     * @return the same builder
+     */
+    public Builder addNativeLibrary(
+        final Platform platform,
+        final ResourceLocator location,
+        final ResourceLocator... dependencies) {
+      return this.addNativeLibrary(
+          platform.getOS(), platform.getArch(), platform.getBits(), location, dependencies);
     }
 
+    /**
+     * Builds a new NativeLibraryLoader for usage.
+     *
+     * @return a new NativeLibraryLoader
+     */
     public NativeLibraryLoader build() {
       return new NativeLibraryLoader(this.libs);
     }

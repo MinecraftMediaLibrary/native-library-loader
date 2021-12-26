@@ -20,7 +20,7 @@ public final class NativeLibraryLoaderTest {
             .addNativeLibrary(OS.OSX, Arch.NOT_ARM, Bits.BITS_64, LibraryLocation.JAR_RESOURCE.create(resource))
             .addNativeLibrary(OS.OSX, Arch.NOT_ARM, Bits.BITS_64, LibraryLocation.URL_RESOURCE.create(url)).build();
 
-    loader.load();
+    loader.load(true);
 
   }
 }

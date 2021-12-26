@@ -22,15 +22,12 @@ package io.github.pulsebeat02.nativelibraryloader.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.ProviderNotFoundException;
 import java.nio.file.StandardCopyOption;
-import java.util.stream.Stream;
 
 public final class NativeUtils {
 
@@ -38,8 +35,8 @@ public final class NativeUtils {
 
   static {
     try {
-      TEMPORARY_DIRECTORY = createTempDirectory("native-library-loader");
-      deleteOnExit(TEMPORARY_DIRECTORY);
+      TEMPORARY_DIRECTORY = FileUtils.createTempDirectory("native-library-loader");
+      FileUtils.deleteOnExit(TEMPORARY_DIRECTORY);
     } catch (final IOException e) {
       throw new AssertionError(e);
     }
@@ -48,20 +45,26 @@ public final class NativeUtils {
   private NativeUtils() {}
 
   public static void loadLibraryFromUrl(final String url) throws IOException {
-    System.load(downloadFile(url).toString());
-  }
 
-  private static Path downloadFile(final String url) throws IOException {
-    final URL website = new URL(url);
-    final Path target = TEMPORARY_DIRECTORY.resolve(getFileName(url));
-    try (final InputStream in = website.openStream()) {
-      Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+    if (!isValidUrl(url)) {
+      throw new IllegalArgumentException("The url must be valid!");
     }
-    return target;
+
+    final String filename = FileUtils.getFileNameFromUrl(url);
+    if (!isValidName(filename)) {
+      throw new IllegalArgumentException("The filename has to be at least 3 characters long.");
+    }
+
+    System.load(FileUtils.downloadFile(url, TEMPORARY_DIRECTORY).toString());
   }
 
-  private static String getFileName(final String url) {
-    return url.substring(url.lastIndexOf('/') + 1);
+  private static boolean isValidUrl(final String url) {
+    try {
+      new URL(url).toURI();
+      return true;
+    } catch (final MalformedURLException | URISyntaxException e) {
+      return false;
+    }
   }
 
   public static void loadLibraryFromJar(final String path) throws IOException {
@@ -92,10 +95,10 @@ public final class NativeUtils {
     try {
       System.load(temp.toString());
     } finally {
-      if (isPosixCompliant()) {
+      if (FileUtils.isPosixCompliant()) {
         Files.deleteIfExists(temp);
       } else {
-        deleteOnExit(temp);
+        FileUtils.deleteOnExit(temp);
       }
     }
   }
@@ -104,47 +107,15 @@ public final class NativeUtils {
       throws IOException {
     final Path temp = TEMPORARY_DIRECTORY.resolve(filename);
     try (final InputStream is = NativeUtils.class.getResourceAsStream(path)) {
-      if (is == null) {
-        throw new IllegalArgumentException("Native library stream cannot be null!");
-      }
+      validateStream(is);
       Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
     }
     return temp;
   }
 
-  private static void deleteOnExit(final Path path) throws IOException {
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> deleteExceptionally(path)));
-  }
-
-  private static void deleteExceptionally(final Path path) {
-    try (final Stream<Path> stream = Files.walk(path).parallel()) {
-      stream.filter(Files::isRegularFile).forEach(NativeUtils::deleteFileExceptionally);
-      Files.deleteIfExists(path);
-    } catch (final IOException e) {
-      e.printStackTrace();
+  private static void validateStream(final InputStream stream) {
+    if (stream == null) {
+      throw new IllegalArgumentException("Native library stream cannot be null!");
     }
-  }
-
-  private static void deleteFileExceptionally(final Path path) {
-    try {
-      Files.deleteIfExists(path);
-    } catch (final IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private static boolean isPosixCompliant() {
-    try {
-      return FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
-    } catch (final FileSystemNotFoundException | ProviderNotFoundException | SecurityException e) {
-      return false;
-    }
-  }
-
-  private static Path createTempDirectory(final String prefix) throws IOException {
-    final String temp = System.getProperty("java.io.tmpdir");
-    final Path directory = Paths.get(temp, prefix + System.nanoTime());
-    Files.createDirectory(directory);
-    return directory;
   }
 }

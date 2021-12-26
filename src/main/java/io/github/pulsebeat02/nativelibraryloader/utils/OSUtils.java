@@ -1,28 +1,26 @@
 /**
  * MIT License
  *
- * Copyright (c) 2021 Brandon Li
+ * <p>Copyright (c) 2021 Brandon Li
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
+ * <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * <p>The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package io.github.pulsebeat02.nativelibraryloader.utils;
 
+import static io.github.pulsebeat02.nativelibraryloader.os.Bits.BITS_32;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.FREEBSD;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.OSX;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.UNIX;
@@ -31,8 +29,6 @@ import static io.github.pulsebeat02.nativelibraryloader.os.OS.WIN;
 import io.github.pulsebeat02.nativelibraryloader.os.Arch;
 import io.github.pulsebeat02.nativelibraryloader.os.Bits;
 import io.github.pulsebeat02.nativelibraryloader.os.OS;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 public final class OSUtils {
@@ -50,23 +46,16 @@ public final class OSUtils {
   }
 
   private static OS getOperatingSystem0() {
-    final List<String> prefix = Arrays.asList("nix", "nux", "aix");
     final String os = System.getProperty("os.name").toLowerCase();
     if (os.contains("win")) {
       return WIN;
-    } else if (prefix.stream().anyMatch(os::contains)) {
-      return UNIX;
     } else if (os.contains("mac")) {
       return OSX;
-    } else if (isFreeBsd(os)) {
+    } else if (os.contains("freebsd")) {
       return FREEBSD;
     } else {
-      throw new AssertionError("Unsupported Operating System!");
+      return UNIX;
     }
-  }
-
-  private static boolean isFreeBsd(final String os) {
-    return os.contains("freebsd");
   }
 
   private static Bits is64Bits0() {
@@ -75,9 +64,9 @@ public final class OSUtils {
       final String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
       final boolean assertion =
           arch != null && arch.endsWith("64") || wow64Arch != null && wow64Arch.endsWith("64");
-      return assertion ? Bits.BITS_64 : Bits.BITS_32;
+      return assertion ? BITS_64 : BITS_32;
     } else {
-      return OS_ARCH.contains("64") ? Bits.BITS_64 : Bits.BITS_32;
+      return OS_ARCH.contains("64") ? BITS_64 : BITS_32;
     }
   }
 
