@@ -64,6 +64,6 @@ subprojects {
     }
 
     task<Wrapper>("wrapper") {
-        gradleVersion = "7.3"
+        gradleVersion = "7.3.3"
     }
 }
