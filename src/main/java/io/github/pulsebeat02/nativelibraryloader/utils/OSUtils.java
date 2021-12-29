@@ -21,6 +21,7 @@
 package io.github.pulsebeat02.nativelibraryloader.utils;
 
 import static io.github.pulsebeat02.nativelibraryloader.os.Bits.BITS_32;
+import static io.github.pulsebeat02.nativelibraryloader.os.Bits.BITS_64;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.FREEBSD;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.OSX;
 import static io.github.pulsebeat02.nativelibraryloader.os.OS.UNIX;
@@ -35,13 +36,13 @@ public final class OSUtils {
 
   private static final String OS_ARCH;
   private static final OS CURRENT;
-  private static final Bits BITS_64;
+  private static final Bits BITS;
   private static final Arch ARM;
 
   static {
     OS_ARCH = System.getProperty("os.arch").toLowerCase(Locale.ROOT);
     CURRENT = getOperatingSystem0();
-    BITS_64 = is64Bits0();
+    BITS = is64Bits0();
     ARM = isArm0();
   }
 
@@ -79,7 +80,7 @@ public final class OSUtils {
   }
 
   public static Bits getBits() {
-    return BITS_64;
+    return BITS;
   }
 
   public static Arch getArm() {

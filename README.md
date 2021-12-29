@@ -39,6 +39,6 @@ repositories {
 2) Add the dependency:
 ```kotlin
 dependencies {
-    implementation("io.github.pulsebeat02:native-library-loader:v1.0.0")
+    implementation("io.github.pulsebeat02:native-library-loader:v1.0.1")
 }
 ```
