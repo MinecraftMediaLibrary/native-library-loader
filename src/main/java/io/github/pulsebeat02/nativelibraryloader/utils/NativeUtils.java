@@ -130,7 +130,6 @@ public final class NativeUtils {
    * @param directory the directory
    */
   public static void addSearchPath(final Path directory) {
-    final String original = System.getProperty(JNA_LIBRARY_PATH);
-    System.setProperty(JNA_LIBRARY_PATH, String.format("%s;%s", original, directory.toString()));
+    System.setProperty(JNA_LIBRARY_PATH, directory.toString());
   }
 }
