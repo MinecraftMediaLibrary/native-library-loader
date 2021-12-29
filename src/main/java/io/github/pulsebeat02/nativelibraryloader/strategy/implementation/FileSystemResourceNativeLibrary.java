@@ -21,6 +21,8 @@
 package io.github.pulsebeat02.nativelibraryloader.strategy.implementation;
 
 import io.github.pulsebeat02.nativelibraryloader.locale.Locale;
+import io.github.pulsebeat02.nativelibraryloader.utils.NativeUtils;
+import java.nio.file.Paths;
 
 /**
  * Defines a local file system resource native library. It fetches from the user file system and
@@ -37,6 +39,7 @@ public final class FileSystemResourceNativeLibrary extends NativeResourceLocator
     final String resource = this.getResource();
     try {
       System.load(resource);
+      NativeUtils.addSearchPath(Paths.get(resource).getParent());
     } catch (final Exception e) {
       System.err.print(Locale.ERR_LOADING_NATIVE_LIBRARY.build(resource));
       throw new AssertionError(e);

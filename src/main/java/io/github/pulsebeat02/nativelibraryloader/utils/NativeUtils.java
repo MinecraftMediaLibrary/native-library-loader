@@ -32,11 +32,13 @@ import java.nio.file.StandardCopyOption;
 public final class NativeUtils {
 
   private static final Path TEMPORARY_DIRECTORY;
+  private static final String JNA_LIBRARY_PATH;
 
   static {
     try {
       TEMPORARY_DIRECTORY = FileUtils.createTempDirectory("native-library-loader");
       FileUtils.deleteOnExit(TEMPORARY_DIRECTORY);
+      JNA_LIBRARY_PATH = "jna.library.path";
     } catch (final IOException e) {
       throw new AssertionError(e);
     }
@@ -55,7 +57,9 @@ public final class NativeUtils {
       throw new IllegalArgumentException("The filename has to be at least 3 characters long.");
     }
 
-    System.load(FileUtils.downloadFile(url, TEMPORARY_DIRECTORY).toString());
+    final Path downloaded = FileUtils.downloadFile(url, TEMPORARY_DIRECTORY);
+    System.load(downloaded.toString());
+    addSearchPath(downloaded.getParent());
   }
 
   private static boolean isValidUrl(final String url) {
@@ -94,6 +98,7 @@ public final class NativeUtils {
   private static void loadNativeBinary(final Path temp) throws IOException {
     try {
       System.load(temp.toString());
+      addSearchPath(temp.getParent());
     } finally {
       if (FileUtils.isPosixCompliant()) {
         Files.deleteIfExists(temp);
@@ -117,5 +122,15 @@ public final class NativeUtils {
     if (stream == null) {
       throw new IllegalArgumentException("Native library stream cannot be null!");
     }
+  }
+
+  /**
+   * Adds a search directory for JNA to the search path.
+   *
+   * @param directory the directory
+   */
+  public static void addSearchPath(final Path directory) {
+    final String original = System.getProperty(JNA_LIBRARY_PATH);
+    System.setProperty(JNA_LIBRARY_PATH, String.format("%s;%s", original, directory.toString()));
   }
 }
