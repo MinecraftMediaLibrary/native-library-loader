@@ -20,6 +20,7 @@
  */
 package io.github.pulsebeat02.nativelibraryloader.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -130,6 +131,23 @@ public final class NativeUtils {
    * @param directory the directory
    */
   public static void addSearchPath(final Path directory) {
-    System.setProperty(JNA_LIBRARY_PATH, directory.toString());
+
+    final String dir = directory.toString();
+
+    final String property = System.getProperty(JNA_LIBRARY_PATH); // only single path
+    if (property == null || property.equals("null")) {
+      System.setProperty(JNA_LIBRARY_PATH, dir);
+      return;
+    }
+
+    final String[] paths = System.getProperty(JNA_LIBRARY_PATH).split(";");
+    for (final String path : paths) {
+      if (path.equals(dir)) {
+        return; // already included
+      }
+    }
+
+    System.setProperty(
+        JNA_LIBRARY_PATH, String.format("%s%s%s", property, File.pathSeparator, dir));
   }
 }

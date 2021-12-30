@@ -12,6 +12,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation("net.java.dev.jna:jna-platform:5.10.0")
+    testImplementation("net.java.dev.jna:jna:5.10.0")
+}
+
 sourceSets {
     main {
         java {
