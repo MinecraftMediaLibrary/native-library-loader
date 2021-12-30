@@ -63,6 +63,12 @@ public final class NativeLibraryLoaderTest {
                 Bits.BITS_32,
                 LibraryLocation.URL_RESOURCE.create(
                     "https://github.com/MinecraftMediaLibrary/EzMediaCore-Native-Go/raw/master/binary/linux/i386/libdither.so"))
+            .addNativeLibrary(
+                OS.FREEBSD,
+                Arch.NOT_ARM,
+                Bits.BITS_64,
+                LibraryLocation.URL_RESOURCE.create(
+                    "https://github.com/MinecraftMediaLibrary/EzMediaCore-Native-Go/raw/master/binary/freebsd/amd64/libdither.so"))
             .build();
     loader.load(true);
 
