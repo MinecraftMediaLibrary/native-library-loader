@@ -32,7 +32,7 @@ you want to associate the binary.
 1) Add the repository:
 ```kotlin
 repositories { 
-    maven("https://pulsebeat02.jfrog.io/artifactory/pulse-gradle-release-local/");
+    maven("https://pulsebeat02.jfrog.io/artifactory/minecraftmedialibrary/");
 }
 ```
 
