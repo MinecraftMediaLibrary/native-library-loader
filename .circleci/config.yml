@@ -1,0 +1,53 @@
+version: 2.1
+orbs:
+  win: circleci/windows@2.2.0
+jobs:
+  build-windows:
+    working_directory: ~/repo
+    executor:
+      name: win/default
+      shell: powershell.exe
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v1-dependencies-
+      - save_cache:
+          paths:
+            - ~/.m2/
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - run: ./gradlew build
+      - run: ./gradlew test
+  build-mac:
+    working_directory: ~/repo
+    macos:
+       xcode: 12.5.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v1-dependencies-
+      - save_cache:
+          paths:
+            - ~/.m2/
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - run: ./gradlew build
+      - run: ./gradlew test
+  build-linux:
+    working_directory: ~/repo
+    docker:
+      - image: fpco/stack-build:lts
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v1-dependencies-
+      - save_cache:
+          paths:
+            - ~/.m2/
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - run: ./gradlew build
+      - run: ./gradlew test
