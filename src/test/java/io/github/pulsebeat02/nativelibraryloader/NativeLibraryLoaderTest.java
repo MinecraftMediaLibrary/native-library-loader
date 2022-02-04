@@ -4,14 +4,12 @@ import io.github.pulsebeat02.nativelibraryloader.os.Arch;
 import io.github.pulsebeat02.nativelibraryloader.os.Bits;
 import io.github.pulsebeat02.nativelibraryloader.os.OS;
 import io.github.pulsebeat02.nativelibraryloader.strategy.LibraryLocation;
+import org.junit.jupiter.api.Test;
 
 public final class NativeLibraryLoaderTest {
 
-  public static void main(final String[] args) {
-    loadNativeLibraries();
-  }
-
-  public static void loadNativeLibraries() {
+  @Test
+  public void testNativeLoad() {
 
     final NativeLibraryLoader loader =
         NativeLibraryLoader.builder()

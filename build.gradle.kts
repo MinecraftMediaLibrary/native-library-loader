@@ -15,6 +15,8 @@ repositories {
 dependencies {
     testImplementation("net.java.dev.jna:jna-platform:5.10.0")
     testImplementation("net.java.dev.jna:jna:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
 
 sourceSets {
@@ -28,6 +30,7 @@ sourceSets {
     }
 }
 
+
 tasks {
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -36,6 +39,9 @@ tasks {
     publish {
         dependsOn(clean)
         dependsOn(build)
+    }
+    test {
+        useJUnitPlatform()
     }
 }
 
