@@ -51,3 +51,9 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
       - run: ./gradlew build
       - run: ./gradlew test
+workflows:
+    build_and_test:
+      jobs:
+        - build-windows
+        - build-mac
+        - build-linux
