@@ -48,15 +48,9 @@ public final class OSUtils {
 
   private static OS getOperatingSystem0() {
     final String os = System.getProperty("os.name").toLowerCase();
-    if (os.contains("win")) {
-      return WIN;
-    } else if (os.contains("mac")) {
-      return OSX;
-    } else if (os.contains("freebsd")) {
-      return FREEBSD;
-    } else {
-      return UNIX;
-    }
+    return os.contains("win")
+        ? WIN
+        : os.contains("mac") ? OSX : os.contains("freebsd") ? FREEBSD : UNIX;
   }
 
   private static Bits is64Bits0() {

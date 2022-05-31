@@ -101,11 +101,15 @@ public final class NativeUtils {
       System.load(temp.toString());
       addSearchPath(temp.getParent());
     } finally {
-      if (FileUtils.isPosixCompliant()) {
-        Files.deleteIfExists(temp);
-      } else {
-        FileUtils.deleteOnExit(temp);
-      }
+      deleteNativeBinary(temp);
+    }
+  }
+
+  private static void deleteNativeBinary(final Path temp) throws IOException {
+    if (FileUtils.isPosixCompliant()) {
+      Files.deleteIfExists(temp);
+    } else {
+      FileUtils.deleteOnExit(temp);
     }
   }
 
