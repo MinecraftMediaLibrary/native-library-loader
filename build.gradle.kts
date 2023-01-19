@@ -13,10 +13,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation("net.java.dev.jna:jna-platform:5.12.1")
-    testImplementation("net.java.dev.jna:jna:5.12.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("net.java.dev.jna:jna-platform:5.13.0")
+    testImplementation("net.java.dev.jna:jna:5.13.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 }
 
 sourceSets {
@@ -75,6 +75,6 @@ subprojects {
     }
 
     task<Wrapper>("wrapper") {
-        gradleVersion = "7.5.1"
+        gradleVersion = "7.6"
     }
 }
