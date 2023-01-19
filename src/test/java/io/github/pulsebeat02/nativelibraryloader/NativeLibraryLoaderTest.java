@@ -70,8 +70,8 @@ public final class NativeLibraryLoaderTest {
             .build();
     loader.load(true);
 
-    System.out.println(
-        DitherLib.INSTANCE.filterLiteDither(
-            new int[] {5, 2}, new byte[] {}, new int[] {5, 3, 3}, 1));
+    /*    System.out.println(
+    DitherLib.INSTANCE.filterLiteDither(
+        new int[] {5, 2}, new byte[] {}, new int[] {5, 3, 3}, 1));*/
   }
 }
